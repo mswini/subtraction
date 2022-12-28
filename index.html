@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Subtraction</title>
+		<link rel="icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="apple-touch-icon" href="favicon.ico" />
+		<link rel="apple-touch-icon-precomposed" href="favicon.ico" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+		<meta name="viewport" content="user-scalable=no, width=device-width" />
+		<meta name="viewport" content="minimum-scale=1.0,width=device-width,maximum-scale=1,user-scalable=no" />
+		<style>
+			body {
+				text-align:center;
+				font-family:arial;
+				background-color:white;
+			}
+			ul {
+				margin:0 0 7vh 0;
+				padding:0;
+				display:flex;
+				flex-wrap:wrap;
+				justify-content:center;
+			}
+			li {
+				cursor:pointer;
+				display:flex;
+				align-items: center;
+				justify-content: center;
+				width: 13vw;
+				height:13vw;
+				margin: 1.5vh;
+				font-size: 10vw;
+				border-radius:4px;
+				background-color:#E9E9E9;
+				user-select:none;
+				color:grey;
+				-webkit-tap-highlight-color: transparent;
+			}
+			table {
+				margin:5vh auto 5vh auto;
+				width:30%;
+				font-size:10vw
+			}
+			@media (max-width: 860px) {
+				table {width:40%;height:auto;font-size: 9vh;}
+				li {margin:1vh;width:14vh;height:14vh;font-size:9vh;}
+			}
+			@media (max-width: 375px) {
+				table {font-size: 7vh;}
+				li {margin:1vh;width:10vh;height:10vh;font-size:7vh;}
+			}
+		</style>
+	</head>
+	<body ontouchstart>
+		<table border='0' cellspacing='0'>
+			<tr>
+				<td id='n1'>2</td>
+				<td>-</td>
+				<td id='n2'>3</td>
+			</tr>
+		</table>
+		<ul></ul>
+	</body>
+	<script>
+		const
+			ul = document.getElementsByTagName('ul')[0];
+			n1 = document.getElementById('n1'),
+			n2 = document.getElementById('n2');
+		
+		let
+			timer, index = 0, factorIndex = 0;
+			answer = [...Array(11).keys()].splice(1),
+			speak = (txt) => {
+				var word = new SpeechSynthesisUtterance(txt)
+				word.lang = 'en';
+				word.rate = 1;
+				speechSynthesis.speak(word);
+			},
+			congratulation = () => {
+				timer = setTimeout(function(){
+					document.body.style.backgroundColor = document.body.style.backgroundColor=="white"?"whitesmoke":"white";
+					congratulation();
+				},200);
+			}
+			start = () => {
+				var keypad = [...Array(11).keys()].splice(1),
+				factor = [...Array(answer[index]).keys()].splice(1);
+
+				factor = (factor.sort(()=>Math.random()-.5))
+				factor = factor[Math.floor(Math.random() * factor.length)];
+
+				n1.innerText = answer[index];
+				n2.innerText = answer[index]-factor;
+
+				speak(n1.innerText + ' minus ' + n2.innerText);
+				ul.innerHTML = '';
+
+				for(i=0; i<keypad.length; i++) {
+					var el = document.createElement('li');
+					el.innerText = keypad[i];
+					el.onclick = function(){
+						speak(this.innerText);
+						if(parseInt(n1.innerText)-parseInt(n2.innerText) == this.innerText){
+							speak('Congratulation');
+							index++;
+							index == answer.length && (index = 0);
+							congratulation();
+							setTimeout(function(){
+								clearTimeout(timer);
+								document.body.style.backgroundColor = "white";
+								start();
+							},2000);
+						}
+						else {
+							speak('Not correct!');
+						}
+					}
+					ul.appendChild(el);
+				}
+				for(i=0; i<n1.innerText; i++){
+					document.getElementsByTagName('li')[i].style.color = 'black';
+				}
+			}
+			answer.shift();
+			answer = answer.sort(()=>Math.random()-.5);
+			start();
+	</script>
